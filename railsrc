@@ -1,0 +1,2 @@
+-d postgresql #defaults my development database to PostgreSQL instead of SQLite3
+-m ~/.dotFiles/railsrc/Template.rb
