@@ -96,18 +96,8 @@ gem 'haml-rails'
 
 gem_group :development, :test do
   gem 'rspec-rails'
-  gem 'factory_girl_rails'
-  gem 'pry-debugger'
+  gem 'pry-byebug'
   gem 'pry-stack_explorer'
-  gem 'dotenv-rails'
-  gem 'sunspot_solr' # optional pre-packaged Solr distribution for use in development
-  gem 'guard-rspec'
-  gem 'guard-livereload'
-  gem 'guard-bundler'
-  gem 'guard-zeus'
-  gem 'capybara'
-  gem 'selenium-webdriver'
-  gem 'database_cleaner'
 end
 
 gem_group :development do
@@ -115,7 +105,6 @@ gem_group :development do
   gem 'better_errors'
   gem 'binding_of_caller'
   gem 'meta_request'
-  gem 'rack-mini-profiler'
 end
 
 # Update list of gems
@@ -127,40 +116,33 @@ run "rails g rspec:install"
 # Make HAML default Application Layout
 remove_file 'app/views/layouts/application.html.erb'
 create_file 'app/views/layouts/application.haml' do
-<<-'HAML'
-!!!
-%html
-  %head
-    %title Linker
-    = stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true
-    = javascript_include_tag "application", "data-turbolinks-track" => true
-    = csrf_meta_tags
-  %body
-    = yield
-HAML
-
+  <<-HAML.strip_heredoc
+    !!!
+    %html
+      %head
+        %title RailsTest
+        = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true
+        = javascript_include_tag 'application', 'data-turbolinks-track' => true
+        = csrf_meta_tags
+      %body
+        = yield
+  HAML
 end
 
 # Rename user in database
 inside('config') do
   run 'sed -i -E "s/username.*$/username:\ \<%=\ ENV[\'DB_USER\']\ %\>/g" database.yml'
 end
-
-
-# Create a guard file
-run "guard init livereload"
-run "guard init bundler"
-run "guard init rspec"
-
+remove_file 'config/database.yml-E'
 
 # Generate a controller and static_pages
-generate(:controller, "static_pages", "index")
+generate(:controller, "home", "index", "--no-assets", "--no-helper", "--no-view-specs")
 
 # Default route
-route "root to: 'static_pages#index'"
+route "root to: 'home#index'"
 
 # Finally, generate a database
-run "rake db:create"
+rake "db:create db:migrate"
 
 # Put everything under revision control
 git :init
