@@ -92,7 +92,7 @@ end
 
 ######################
 # Gems I use
-gem 'haml-rails'
+gem 'slim-rails'
 
 gem_group :development, :test do
   gem 'rspec-rails'
@@ -115,18 +115,18 @@ run "rails g rspec:install"
 
 # Make HAML default Application Layout
 remove_file 'app/views/layouts/application.html.erb'
-create_file 'app/views/layouts/application.haml' do
-  <<-HAML.strip_heredoc
-    !!!
-    %html
-      %head
-        %title RailsTest
+create_file 'app/views/layouts/application.html.slim' do
+  <<-SLIM.strip_heredoc
+    doctype html
+    html
+      head
+        title RailsTest
         = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true
         = javascript_include_tag 'application', 'data-turbolinks-track' => true
         = csrf_meta_tags
-      %body
+      body
         = yield
-  HAML
+  SLIM
 end
 
 # Rename user in database
