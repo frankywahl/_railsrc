@@ -92,12 +92,22 @@ end
 
 ######################
 # Gems I use
+
+# For managing ENV variables
+gem 'dotenv-rails', '~> 1.0', groups: %i(development test)
+
 gem 'slim-rails'
 
 gem_group :development, :test do
   gem 'rspec-rails'
   gem 'pry-byebug'
   gem 'pry-stack_explorer'
+  gem 'rubocop'
+  gem 'rubocop-rspec'
+  gem 'simplecov'
+  gem 'simplecov-console'
+  gem 'awesome_print', require: false
+  gem 'factory_girl_rails'
 end
 
 gem_group :development do
@@ -107,13 +117,18 @@ gem_group :development do
   gem 'meta_request'
 end
 
+gem_group :test do
+  gem 'database_cleaner'
+  gem 'codeclimate-test-reporter', require: nil
+end
+
 # Update list of gems
-run "bundle"
+run 'bundle'
 
 # Generate an rspec helper
-run "rails g rspec:install"
+run 'rails g rspec:install'
 
-# Make HAML default Application Layout
+# Make SLIM default Application Layout
 remove_file 'app/views/layouts/application.html.erb'
 create_file 'app/views/layouts/application.html.slim' do
   <<-SLIM.strip_heredoc
@@ -131,11 +146,101 @@ create_file 'app/views/layouts/application.html.slim' do
   SLIM
 end
 
-# Rename user in database
-inside('config') do
-  run 'sed -i -E "s/username.*$/username:\ \<%=\ ENV[\'DB_USER\']\ %\>/g" database.yml'
+create_file 'spec/support/coverage.rb' do
+  <<-SUPPORT.strip_heredoc
+    require 'simplecov'
+    require 'simplecov-console'
+    require 'codeclimate-test-reporter'
+
+    CodeClimate::TestReporter.start
+
+    SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
+      SimpleCov::Formatter::HTMLFormatter,
+      SimpleCov::Formatter::Console,
+      CodeClimate::TestReporter::Formatter
+    ]
+
+    SimpleCov.start :rails do
+      add_group 'Workers', 'app/workers'
+      add_filter 'bundle'
+      SimpleCov.minimum_coverage 100
+    end unless ENV.fetch('NO_TEST_COVERAGE', false)
+  SUPPORT
 end
-remove_file 'config/database.yml-E'
+
+create_file 'spec/support/factory_girl.rb' do
+  <<-FACTORY_GIRL.strip_heredoc
+    RSpec.configure do |config|
+      # additional factory_girl configuration
+
+      config.before(:suite) do
+        begin
+          DatabaseCleaner.start
+          FactoryGirl.lint
+        ensure
+          DatabaseCleaner.clean
+        end
+      end
+    end
+  FACTORY_GIRL
+
+end
+
+create_file '.rubocop.yml' do
+  <<-RUBOCOP.strip_heredoc
+    require: rubocop-rspec
+
+    AllCops:
+      Exclude:
+        - db/migrate/*
+        - db/schema.rb
+        - bin/**/*
+        - tmp/**/*
+        - vendor/**/*
+        - .bundle/**/*
+
+    Documentation:
+      Enabled: false
+
+    LineLength:
+      Max: 140
+  RUBOCOP
+end
+
+  create_file '.ruby-version', RUBY_VERSION
+
+inject_into_file 'spec/rails_helper.rb', after: "require 'rspec/rails'\n" do
+  <<-EOF.strip_heredoc
+    Dir["\#{File.expand_path('../support', __FILE__)}/**/*.rb"].each { |f| require f }
+  EOF
+end
+
+inject_into_file 'Rakefile', after: "Rails.application.load_tasks\n" do
+  <<-EOF.strip_heredoc
+    if %w(development test).include? Rails.env
+      require 'rubocop/rake_task'
+      RuboCop::RakeTask.new
+
+      task(:default).clear
+      task default: %i(spec rubocop)
+    end
+  EOF
+end
+
+append_file '.gitignore' do
+  <<-GIT.strip_heredoc
+    # Ignore bundler config.
+    /.bundle
+
+    # Ignore coverage directory
+    /coverage
+
+    # Ignore .env
+    .env
+  GIT
+end
+
+gsub_file 'config/database.yml', /username.*$/, "username: <%= ENV['DB_USER'] %>"
 
 # Generate a controller and static_pages
 generate(:controller, "home", "index", "--no-assets", "--no-helper", "--no-view-specs")
@@ -146,10 +251,13 @@ route "root to: 'home#index'"
 # Finally, generate a database
 rake "db:create db:migrate"
 
+run 'bundle exec rubocop -a'
+
 # Put everything under revision control
 git :init
 git add: "."
 git commit: %Q{ -m 'Initial commit' }
+
 
 # Add to Github? This is what needs the first part
 puts "\n"
@@ -158,3 +266,4 @@ if yes? "Would you like to push the project to github?".cyan
   git remote: "add Github #{repo.ssh_url}"
   git push: '-u Github master'
 end
+
