@@ -69,7 +69,7 @@ end
 gsub_file 'config/database.yml', /username.*$/, "username: <%= ENV['DB_USER'] %>"
 
 # Generate a controller and static_pages
-generate(:controller, 'home', 'index', '--no-assets', '--no-helper', '--no-view-specs')
+generate(:controller, 'home', 'index', '--no-assets', '--no-helper')
 copy_from_file 'spec', 'routing', 'home_routing_spec.rb'
 
 # Default route
