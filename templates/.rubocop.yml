@@ -1,0 +1,30 @@
+require: rubocop-rspec
+
+AllCops:
+  Exclude:
+    - db/migrate/*
+    - db/schema.rb
+    - bin/**/*
+    - tmp/**/*
+    - vendor/**/*
+    - .bundle/**/*
+
+Documentation:
+  Enabled: false
+
+LineLength:
+  Max: 140
+
+RSpec/FilePath:
+  Exclude:
+    - spec/routing/**/*
+
+RSpec/DescribeClass:
+  Exclude:
+    - spec/other/**/*
+    - spec/requests/**/*
+    - spec/views/**/*
+
+RSpec/InstanceVariable:
+  Exclude:
+    - spec/views/**/*
