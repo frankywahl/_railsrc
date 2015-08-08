@@ -67,6 +67,8 @@ append_file '.gitignore' do
 end
 
 gsub_file 'config/database.yml', /username.*$/, "username: <%= ENV['DB_USER'] %>"
+gsub_file 'Gemfile', /gem 'coffee.*$/, ''
+gsub_file 'Gemfile', /# Use CoffeeScript.*$/, ''
 
 # Generate a controller and static_pages
 generate(:controller, 'home', 'index', '--no-assets', '--no-helper')
