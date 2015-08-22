@@ -1,0 +1,12 @@
+.DS_Store
+.env*
+.git/
+.gitignore
+.rspec
+.rubocop.yml
+log/*
+tmp/*
+bin/spring
+coverage/
+Dockerfile
+Guardfile

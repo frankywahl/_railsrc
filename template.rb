@@ -82,6 +82,13 @@ rake 'db:create db:migrate'
 
 run 'bundle exec rubocop -a'
 
+create_file 'Dockerfile' do
+  erb = load_from_file('Dockerfile.erb')
+  ERB.new(erb).result(binding)
+end
+copy_from_file '.dockerignore'
+copy_from_file 'docker-compose.yml'
+
 # Put everything under revision control
 git :init
 git add: '.'
