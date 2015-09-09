@@ -22,6 +22,7 @@ gem_group :development, :test do
   gem 'pry-stack_explorer'
   gem 'rubocop'
   gem 'rubocop-rspec'
+  gem 'slim_lint'
   gem 'simplecov'
   gem 'simplecov-console'
   gem 'awesome_print', require: false
@@ -52,6 +53,7 @@ copy_from_file('app', 'views', 'layouts', 'application.html.slim')
 copy_from_file('spec', 'support', 'coverage.rb')
 copy_from_file('spec', 'support', 'factory_girl.rb')
 copy_from_file '.rubocop.yml'
+copy_from_file '.slim-lint.yml'
 create_file '.ruby-version', RUBY_VERSION
 
 inject_into_file 'spec/rails_helper.rb', after: "require 'rspec/rails'\n" do
