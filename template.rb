@@ -1,4 +1,19 @@
 require_relative File.join('lib', 'gem')
+require 'erb'
+require 'ostruct'
+
+questions = OpenStruct.new
+
+%i(newrelic).each do |option|
+  questions.send("#{option}?=", yes?("Do you want to install #{option}? (y/n)"))
+end
+
+
+if questions.newrelic?
+  newrelic_file = File.expand_path(File.join('..', 'templates', 'config', 'newrelic.yml.erb'), __FILE__)
+  create_file File.join('config', 'newrelic.yml'), ERB.new(File.read(newrelic_file)).result(binding)
+  gem 'newrelic_rpm' if questions.newrelic?
+end
 
 def load_from_file(*args)
   original_file = File.expand_path(File.join('..', 'templates', *args), __FILE__)
@@ -10,7 +25,6 @@ def copy_from_file(*args)
 end
 
 # Gems I use
-
 # For managing ENV variables
 gem 'dotenv-rails', groups: %i(development test)
 
