@@ -6,5 +6,5 @@ if %w(development test).include? Rails.env
   RuboCop::RakeTask.new
 
   task(:default).clear
-  task default: %i(spec rubocop slim_lint)
+  task default: %i(spec rubocop slim_lint factory_girl:lint)
 end
