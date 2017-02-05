@@ -28,3 +28,6 @@ RSpec/DescribeClass:
 RSpec/InstanceVariable:
   Exclude:
     - spec/views/**/*
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
