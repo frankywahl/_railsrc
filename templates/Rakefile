@@ -1,7 +1,8 @@
-require 'slim_lint/rake_task'
-SlimLint::RakeTask.new
 
 if %w(development test).include? Rails.env
+  require 'slim_lint/rake_task'
+  SlimLint::RakeTask.new
+
   require 'rubocop/rake_task'
   RuboCop::RakeTask.new
 
