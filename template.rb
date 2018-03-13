@@ -26,7 +26,7 @@ gem_group :development, :test do
   gem 'simplecov'
   gem 'simplecov-console'
   gem 'awesome_print', require: false
-  gem 'factory_girl_rails'
+  gem 'factory_bot'
 end
 
 gem_group :development do
@@ -51,8 +51,8 @@ run 'rails g rspec:install'
 remove_file 'app/views/layouts/application.html.erb'
 copy_from_file('app', 'views', 'layouts', 'application.html.slim')
 copy_from_file('spec', 'support', 'coverage.rb')
-copy_from_file('spec', 'support', 'factory_girl.rb')
-copy_from_file('lib', 'tasks', 'factory_girl.rake')
+copy_from_file('spec', 'support', 'factory_bot.rb')
+copy_from_file('lib', 'tasks', 'factory_bot.rake')
 copy_from_file '.rubocop.yml'
 copy_from_file '.slim-lint.yml'
 create_file '.ruby-version', RUBY_VERSION
