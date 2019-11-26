@@ -8,6 +8,7 @@ AllCops:
     - tmp/**/*
     - vendor/**/*
     - .bundle/**/*
+    - node_modules/**/*
 
 Documentation:
   Enabled: false
