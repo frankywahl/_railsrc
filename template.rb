@@ -54,7 +54,6 @@ copy_from_file('spec', 'support', 'factory_bot.rb')
 copy_from_file('lib', 'tasks', 'factory_bot.rake')
 copy_from_file '.rubocop.yml'
 copy_from_file '.slim-lint.yml'
-create_file '.ruby-version', RUBY_VERSION
 
 inject_into_file 'spec/rails_helper.rb', after: "require 'rspec/rails'\n" do
   load_from_file('spec', 'rails_helper.rb')
